@@ -5,9 +5,13 @@ import Vue from '@vitejs/plugin-vue'
 import Components from 'vite-plugin-components'
 import ViteIcons, { ViteIconsResolver } from 'vite-plugin-icons'
 import { VitePWA } from 'vite-plugin-pwa'
+import sessionsInfo from './src/assets/json/session.json'
 
 export default defineConfig(({ mode, command }) => {
   const parsed = loadEnv(mode, process.cwd())
+  const sessions = sessionsInfo.sessions.map(x => `/session/${x.id}`)
+
+  console.log(sessions)
 
   const renderRoutes = parsed?.VITE_LANDING_ONLY === 'yes'
     ? (() => {
@@ -35,7 +39,8 @@ export default defineConfig(({ mode, command }) => {
           '/venue',
           '/map',
           '/sponsor',
-          '/staff'
+          '/staff',
+          ...sessions
         ].flatMap(r => [r, `${r}/`])
 
         return Array.from(readdirSync('./locales/'))
@@ -45,6 +50,8 @@ export default defineConfig(({ mode, command }) => {
               .concat(join('/', locale, '/session/template'))
           })
       })()
+
+  console.log(renderRoutes)
 
   const gaTemplate = readFileSync(join(__dirname, './templates/ga-template.html')).toString()
 
